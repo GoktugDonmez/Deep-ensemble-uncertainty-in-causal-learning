@@ -1,0 +1,3 @@
+[submodule "dibs"]
+	path = dibs
+	url = https://github.com/larslorch/dibs.git

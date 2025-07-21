@@ -6,9 +6,9 @@ random_seed: 42
 
 # Data Generation Settings
 data:
-  n_vars: 20
-  n_observations: 2
-  n_ho_observations: 2
+  n_vars: 2
+  n_observations: 20
+  n_ho_observations: 20
   n_intervention_sets: 3
   perc_intervened: 0.1
 
@@ -27,14 +27,14 @@ training:
 learners:
   - name: "SVGD"
     type: "DibsSVGDLearner"
-    n_particles: 20
+    n_particles: 2
 
   - name: "Ensemble"
     type: "DeepEnsembleLearner"
-    n_ensemble_runs: 20
+    n_ensemble_runs: 2
 
 # Evaluation & Plotting
 evaluation:
   metrics: ["eshd", "auroc", "negll_obs", "negll_intrv"]
-  n_interv_samples: 2 # Samples for plotting distributions
+  n_interv_samples: 20 # Samples for plotting distributions
   interv_value: 0.0

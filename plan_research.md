@@ -5,6 +5,15 @@ This document outlines the research plan for investigating the effectiveness of 
 
 ## 21-07-2025:
 
+### Codebase Refactoring Summary
+
+To improve modularity and reproducibility, the codebase has been significantly refactored:
+- **Git Repository:** The project is now a standalone Git repository.
+- **Dependency Management:** The `dibs` library is now included as a Git submodule pointing to the official upstream repository. This separates the core library from the experiment code.
+- **Code Separation:** Custom experiment code and notebooks previously located in a fork of the `dibs` library have been moved into `causal_experiments/legacy` within this project.
+
+This new structure provides a clean separation between the underlying causal discovery library and our research code, making it easier to manage and version both independently.
+
 # starting, with these review from last week, will need to implement these today 
 - clean the code to be more modular use classes and better tracking of variables
 - try different deep ensemble methods and model architectures

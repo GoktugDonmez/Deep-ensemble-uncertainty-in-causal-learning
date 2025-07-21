@@ -1,0 +1,40 @@
+# Configuration for comparing DiBS SVGD vs. Deep Ensemble
+
+# General Experiment Settings
+experiment_name: "svgd_vs_ensemble_20p"
+random_seed: 42
+
+# Data Generation Settings
+data:
+  n_vars: 20
+  n_observations: 2
+  n_ho_observations: 2
+  n_intervention_sets: 3
+  perc_intervened: 0.1
+
+# Model Architecture (shared by both learners)
+model:
+  type: "DenseNonlinearGaussian"
+  hidden_layers: [5]
+  obs_noise: 0.1
+  sig_param: 1.0
+
+# Training Parameters (shared by both learners)
+training:
+  n_steps: 2
+
+# List of Learners to Run
+learners:
+  - name: "SVGD"
+    type: "DibsSVGDLearner"
+    n_particles: 20
+
+  - name: "Ensemble"
+    type: "DeepEnsembleLearner"
+    n_ensemble_runs: 20
+
+# Evaluation & Plotting
+evaluation:
+  metrics: ["eshd", "auroc", "negll_obs", "negll_intrv"]
+  n_interv_samples: 2 # Samples for plotting distributions
+  interv_value: 0.0

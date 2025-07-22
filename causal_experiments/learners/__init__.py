@@ -7,5 +7,5 @@ __all__ = [
     'BaseLearner',
     'DeepEnsembleLearner', 
     'DibsSVGDLearner',
-    'HeterogeneousEnsembleLearner'
+    'ConfigurableEnsembleLearner'
 ]

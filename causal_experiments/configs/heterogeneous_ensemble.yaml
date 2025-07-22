@@ -26,10 +26,10 @@ training:
 
 # List of Learners to Run
 learners:
-  # Heterogeneous ensemble with diverse architectures
-  - name: "HeterogeneousEnsemble"
-    type: "HeterogeneousEnsembleLearner"
-    n_ensemble_runs: 16  # Will cycle through architecture patterns
+  # Configurable ensemble (currently standard behavior)
+  - name: "ConfigurableEnsemble"
+    type: "ConfigurableEnsembleLearner"
+    n_ensemble_runs: 16
     
   # Standard ensemble for comparison
   - name: "StandardEnsemble"

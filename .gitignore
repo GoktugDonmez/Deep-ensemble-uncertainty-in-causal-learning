@@ -34,6 +34,7 @@ venv.bak/
 
 # Experiment results
 causal_experiments/results/
+results/
 
 # Notebook checkpoints
 .ipynb_checkpoints

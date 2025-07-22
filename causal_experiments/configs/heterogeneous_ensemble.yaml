@@ -7,42 +7,42 @@ random_seed: 42
 
 # Data Generation Settings
 data:
-  n_vars: 5
-  n_observations: 150
-  n_ho_observations: 50
+  n_vars: 20
+  n_observations: 1 #150
+  n_ho_observations: 1 #50
   n_intervention_sets: 3
   perc_intervened: 0.2
 
 # Base Model Architecture (used as reference for heterogeneous variants)
 model:
   type: "DenseNonlinearGaussian"
-  hidden_layers: [5]  # This will be overridden by individual ensemble members
+  hidden_layers: [5] ## should be parameterised, in fact whole variables should be parameterised
   obs_noise: 0.1
   sig_param: 1.0
 
 # Training Parameters
 training:
-  n_steps: 1500
+  n_steps: 1 #1500
 
 # List of Learners to Run
 learners:
   # Configurable ensemble (currently standard behavior)
   - name: "ConfigurableEnsemble"
     type: "ConfigurableEnsembleLearner"
-    n_ensemble_runs: 16
+    n_ensemble_runs: 20
     
   # Standard ensemble for comparison
   - name: "StandardEnsemble"
     type: "DeepEnsembleLearner"
-    n_ensemble_runs: 16
+    n_ensemble_runs: 20
     
   # SVGD baseline for comparison
   - name: "SVGD"
     type: "DibsSVGDLearner"
-    n_particles: 16
+    n_particles: 20
 
 # Evaluation & Plotting
 evaluation:
   metrics: ["eshd", "auroc", "negll_obs", "negll_intrv"]
-  n_interv_samples: 1000
+  n_interv_samples: 1  #1000
   interv_value: 0.0 

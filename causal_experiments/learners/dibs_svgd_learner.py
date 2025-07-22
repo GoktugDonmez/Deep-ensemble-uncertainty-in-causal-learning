@@ -51,8 +51,8 @@ class DibsSVGDLearner(BaseLearner):
             steps=n_steps
         )
 
-        train_time = time.time() - start_time
-        print(f"Finished training in {train_time:.2f}s")
+        self.training_time = time.time() - start_time
+        print(f"Finished training in {self.training_time:.2f}s")
         
         return gs, thetas
 
@@ -61,6 +61,8 @@ class DibsSVGDLearner(BaseLearner):
         Evaluates the SVGD model using standard DiBS metrics.
         """
         print("\n--- Evaluating DiBS SVGD ---")
+        start_time = time.time()
+        
         gs, thetas = particles
 
         dibs_instance = JointDiBS(x=x_ho_obs, interv_mask=None, graph_model=graph_model, likelihood_model=likelihood_model)
@@ -86,6 +88,8 @@ class DibsSVGDLearner(BaseLearner):
             x=x_ho_intrv
         )
         print(f"NLL (Interventional): {negll_intrv:.2f}")
+
+        self.evaluation_time = time.time() - start_time
 
         metrics = {
             'eshd': float(eshd),

@@ -33,7 +33,12 @@ class DibsSVGDLearner(BaseLearner):
         n_steps = self.config.get('training', {}).get('n_steps', 1000)
         random_seed = self.config.get('random_seed', 42)
         
+        # Extract training parameters if available
+        learning_rate = self.config.get('training', {}).get('learning_rate', 1e-3)
+        optimizer = self.config.get('training', {}).get('optimizer', 'adam')
+        
         print(f"\n--- Training DiBS with SVGD ({n_particles} particles) ---")
+        print(f"Training parameters: lr={learning_rate}, optimizer={optimizer}, steps={n_steps}")
         start_time = time.time()
 
         key = jax.random.PRNGKey(random_seed)
@@ -45,11 +50,18 @@ class DibsSVGDLearner(BaseLearner):
             likelihood_model=likelihood_model
         )
         
-        gs, thetas = dibs_svgd.sample(
-            key=key, 
-            n_particles=n_particles, 
-            steps=n_steps
-        )
+        # Pass training parameters if the DiBS API supports them
+        sample_kwargs = {
+            'key': key,
+            'n_particles': n_particles,
+            'steps': n_steps
+        }
+        
+        # Add optimizer and learning rate if DiBS supports them
+        if hasattr(dibs_svgd, 'set_training_params'):
+            dibs_svgd.set_training_params(learning_rate=learning_rate, optimizer=optimizer)
+        
+        gs, thetas = dibs_svgd.sample(**sample_kwargs)
 
         train_time = time.time() - start_time
         print(f"Finished training in {train_time:.2f}s")

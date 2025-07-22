@@ -1,0 +1,98 @@
+# Base Configuration for Core Experiment Architecture
+# Deep Ensembles for Causal Discovery - Systematic Parameter Study
+
+# Experiment Metadata
+experiment_family: "core_architecture_study"
+description: "Systematic study of neural network architectures and hyperparameters for DiBS vs. Ensemble comparison"
+version: "1.0"
+
+# Data Generation Settings (Fixed for all experiments)
+data:
+  n_vars: 20
+  n_observations: 100
+  n_ho_observations: 100
+  n_intervention_sets: 3
+  perc_intervened: 0.1
+
+# Parameter Grids for Systematic Variation
+parameter_grids:
+  # Network Architecture Variations (3 combinations)
+  hidden_layers:
+    - [5]        # Single layer, width 5
+    - [10]       # Single layer, width 10  
+    - [5, 5]     # Two layers, width 5 each
+  
+  # Activation Functions (2 combinations)
+  activation:
+    - "relu"
+    - "tanh"
+  
+  # Signal Parameter for Gaussian Prior (2 combinations)
+  sig_param:
+    - 1.0
+    - 2.0
+  
+  # Learning Rates (4 combinations)
+  learning_rate:
+    - 5e-3
+    - 1e-3
+    - 1e-4
+    - 2e-3
+  
+  # Optimizers (2 combinations)
+  optimizer:
+    - "adam"
+    - "rmsprop"
+  
+  # Random Seeds (5 combinations)
+  seeds:
+    - 42
+    - 123
+    - 456
+    - 789
+    - 999
+  
+  # Number of runs per configuration (4 runs for deviation analysis)
+  n_runs_per_config: 4
+
+# Fixed Model Parameters
+model_defaults:
+  type: "DenseNonlinearGaussian"
+  obs_noise: 0.1
+  bias: true
+
+# Fixed Training Parameters
+training_defaults:
+  n_steps: 2000
+
+# Learner Configurations
+learners:
+  - name: "SVGD"
+    type: "DibsSVGDLearner"
+    n_particles: 20
+    
+  - name: "Ensemble"
+    type: "DeepEnsembleLearner"
+    n_ensemble_runs: 20
+    
+  - name: "EnsembleDropout"
+    type: "EnsembleWithDropoutLearner"
+    n_ensemble_runs: 20
+    dropout_rate: 0.1
+    enabled: false
+
+# Evaluation Settings
+evaluation:
+  metrics: ["eshd", "auroc", "negll_obs", "negll_intrv"]
+  n_interv_samples: 1000
+  interv_value: 0.0
+
+# Output and Logging
+output:
+  save_particles: true
+  save_metrics: true
+  save_plots: true
+  results_base_dir: "results/core_architecture_study"
+
+# Total Expected Experiments: 3 × 2 × 2 × 4 × 2 × 5 × 4 = 1920 experiments  
+total_expected_experiments: 1920

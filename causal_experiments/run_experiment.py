@@ -57,12 +57,21 @@ def main(config_path):
     print("\n--- Generating Data ---")
     key, subk = random.split(key)
     graph_model = make_graph_model(n_vars=config['data']['n_vars'], graph_prior_str="sf")
-    generative_model = DenseNonlinearGaussian(
-        n_vars=config['data']['n_vars'],
-        hidden_layers=tuple(config['model']['hidden_layers']),
-        obs_noise=config['model']['obs_noise'],
-        sig_param=config['model']['sig_param']
-    )
+    # Create model with all specified parameters
+    model_kwargs = {
+        'n_vars': config['data']['n_vars'],
+        'hidden_layers': tuple(config['model']['hidden_layers']),
+        'obs_noise': config['model']['obs_noise'],
+        'sig_param': config['model']['sig_param']
+    }
+    
+    # Add optional parameters if specified
+    if 'activation' in config['model']:
+        model_kwargs['activation'] = config['model']['activation']
+    if 'bias' in config['model']:
+        model_kwargs['bias'] = config['model']['bias']
+    
+    generative_model = DenseNonlinearGaussian(**model_kwargs)
     data_details = make_synthetic_bayes_net(key=subk, **config['data'], graph_model=graph_model, generative_model=generative_model)
     
     # Prepare combined training data

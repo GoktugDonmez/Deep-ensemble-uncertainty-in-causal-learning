@@ -4,7 +4,7 @@
 #SBATCH --error=logs/slurm_error_%j.txt
 #SBATCH --time=01:00:00
 #SBATCH --mem=4G
-#SBATCH --cpus-per-task=1
+#SBATCH --gpus=1
 
 # Create logs directory if it doesn't exist
 mkdir -p logs

@@ -1,12 +1,7 @@
-name: causal_experiments
-channels:
-  - defaults
-  - conda-forge
 dependencies:
   - python=3.8
   - numpy
   - pytorch
-  - cpuonly
   - jupyter
   - jupyterlab
   - matplotlib
@@ -14,7 +9,9 @@ dependencies:
   - seaborn
   - tqdm
   - pip
+  - jaxlib=*=cuda*  # wildcard version that includes cuda
+  - jax
   - pip:
-    - igraph
-    - gcastle
-    - mamba
+      - igraph
+      - gcastle
+      - mamba

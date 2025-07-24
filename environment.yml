@@ -18,4 +18,3 @@ dependencies:
     - igraph
     - gcastle
     - mamba
-    - mlflow

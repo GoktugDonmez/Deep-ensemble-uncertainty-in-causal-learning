@@ -36,9 +36,6 @@ venv.bak/
 causal_experiments/results/
 results/
 
-# MLflow
-mlruns/
-
 # Notebook checkpoints
 .ipynb_checkpoints
 

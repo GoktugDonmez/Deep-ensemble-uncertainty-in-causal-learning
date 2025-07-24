@@ -55,6 +55,7 @@ def main(config_path):
     # 3. Generate Data
     print("\n--- Generating Data ---")
     key, subk = random.split(key)
+
     
     # Use the new data generation module
     data_generator = get_data_generator_from_config(config)

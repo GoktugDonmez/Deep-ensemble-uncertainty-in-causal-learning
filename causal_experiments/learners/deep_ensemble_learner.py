@@ -36,7 +36,12 @@ class DeepEnsembleLearner(BaseLearner):
         n_steps = self.config.get('training', {}).get('n_steps', 1000)
         random_seed = self.config.get('random_seed', 42)
         
+        # Extract training parameters if available
+        learning_rate = self.config.get('training', {}).get('learning_rate', 1e-3)
+        optimizer = self.config.get('training', {}).get('optimizer', 'adam')
+        
         print(f"\n--- Training Deep Ensemble ({n_ensemble_runs} runs) ---")
+        print(f"Training parameters: lr={learning_rate}, optimizer={optimizer}, steps={n_steps}")
         ensemble_gs = []
         ensemble_thetas = []
         start_time = time.time()
@@ -55,11 +60,20 @@ class DeepEnsembleLearner(BaseLearner):
                 likelihood_model=likelihood_model
             )
             
-            gs, thetas = dibs_single.sample(
-                key=subk, 
-                n_particles=1, 
-                steps=n_steps
-            )
+            # Pass training parameters if the DiBS API supports them
+            # Note: Need to check DiBS documentation for exact parameter names
+            sample_kwargs = {
+                'key': subk,
+                'n_particles': 1,
+                'steps': n_steps
+            }
+            
+            # Add optimizer and learning rate if DiBS supports them
+            # These parameter names may need adjustment based on actual DiBS API
+            if hasattr(dibs_single, 'set_training_params'):
+                dibs_single.set_training_params(learning_rate=learning_rate, optimizer=optimizer)
+            
+            gs, thetas = dibs_single.sample(**sample_kwargs)
 
             ensemble_gs.append(gs)
             ensemble_thetas.append(thetas)

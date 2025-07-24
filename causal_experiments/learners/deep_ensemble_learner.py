@@ -78,8 +78,8 @@ class DeepEnsembleLearner(BaseLearner):
             ensemble_gs.append(gs)
             ensemble_thetas.append(thetas)
 
-        ensemble_time = time.time() - start_time
-        print(f"Finished training in {ensemble_time:.2f}s")
+        self.training_time = time.time() - start_time
+        print(f"Finished training in {self.training_time:.2f}s")
 
         # Combine the particles from all runs into a single set
         combined_gs = jnp.concatenate(ensemble_gs, axis=0)
@@ -93,6 +93,8 @@ class DeepEnsembleLearner(BaseLearner):
         Evaluates the ensemble using standard DiBS metrics.
         """
         print("\n--- Evaluating Deep Ensemble ---")
+        start_time = time.time()
+        
         gs, thetas = particles
 
         # Create a dummy DiBS instance to get access to the mixture function and likelihood helpers.
@@ -122,6 +124,8 @@ class DeepEnsembleLearner(BaseLearner):
             x=x_ho_intrv
         )
         print(f"NLL (Interventional): {negll_intrv:.2f}")
+
+        self.evaluation_time = time.time() - start_time
 
         metrics = {
             'eshd': float(eshd),

@@ -88,6 +88,10 @@ def main(config_path):
         particles = learner.train(x_train, mask_train, graph_model, generative_model)
         metrics = learner.evaluate(particles, data_details.x_ho, x_ho_intrv, mask_ho_intrv, data_details.g, graph_model, generative_model)
         
+        # Save results to CSV
+        csv_path = os.path.join(results_dir, "experiment_results.csv")
+        learner.save_to_csv(config, learner_name, metrics, csv_path, run_id=f"{timestamp}_{learner_name}")
+        
         results[learner_name] = {'metrics': metrics, 'particles': particles}
 
     # 5. Visualization

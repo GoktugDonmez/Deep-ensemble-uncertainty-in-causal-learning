@@ -1,0 +1,60 @@
+# Configuration for demonstrating CSV Results Tracking
+# This config compares DiBS SVGD vs. Deep Ensemble vs. Configurable Ensemble
+
+# General Experiment Settings
+experiment_name: "csv_tracking_demo"
+random_seed: 42
+
+# Data Generation Settings
+data:
+  n_vars: 5
+  n_observations: 100
+  n_ho_observations: 50
+  n_intervention_sets: 3
+  perc_intervened: 0.2
+
+# Model Architecture (shared by all learners)
+model:
+  type: "DenseNonlinearGaussian"
+  hidden_layers: [10, 5]  # 2 layers, widths 10 and 5
+  obs_noise: 0.1
+  sig_param: 1.0
+
+# Training Parameters (shared by all learners)
+training:
+  n_steps: 100  # Reduced for demo purposes
+  learning_rate: 0.01
+  optimizer: "adam"
+
+# List of Learners to Compare
+learners:
+  - name: "SVGD_small"
+    type: "DibsSVGDLearner"
+    n_particles: 5
+    inference_seed: 100
+
+  - name: "SVGD_large"
+    type: "DibsSVGDLearner"
+    n_particles: 10
+    inference_seed: 101
+
+  - name: "Ensemble_small"
+    type: "DeepEnsembleLearner"
+    n_ensemble_runs: 5
+    inference_seed: 200
+
+  - name: "Ensemble_large"
+    type: "DeepEnsembleLearner"
+    n_ensemble_runs: 10
+    inference_seed: 201
+
+  - name: "ConfigEnsemble"
+    type: "ConfigurableEnsembleLearner"
+    n_ensemble_runs: 8
+    inference_seed: 300
+
+# Evaluation & Plotting
+evaluation:
+  metrics: ["eshd", "auroc", "negll_obs", "negll_intrv"]
+  n_interv_samples: 50
+  interv_value: 1.0

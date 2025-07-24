@@ -12,8 +12,7 @@ from jax import random, tree_util
 import igraph as ig
 
 # Import from our new structure
-from dibs.target import make_synthetic_bayes_net, make_graph_model
-from dibs.models import DenseNonlinearGaussian
+from data import generate_synthetic_data, get_data_generator_from_config
 from utils.plotting import sample_posterior_predictive, plot_interventional_distributions
 
 
@@ -56,33 +55,25 @@ def main(config_path):
     # 3. Generate Data
     print("\n--- Generating Data ---")
     key, subk = random.split(key)
-    graph_model = make_graph_model(n_vars=config['data']['n_vars'], graph_prior_str="sf")
-    generative_model = DenseNonlinearGaussian(
-        n_vars=config['data']['n_vars'],
-        hidden_layers=tuple(config['model']['hidden_layers']),
-        obs_noise=config['model']['obs_noise'],
-        sig_param=config['model']['sig_param']
-    )
-    data_details = make_synthetic_bayes_net(key=subk, **config['data'], graph_model=graph_model, generative_model=generative_model)
     
-    # Prepare combined training data
-    all_train_data = [data_details.x]
-    all_train_masks = [jnp.zeros_like(data_details.x, dtype=bool)]
-    for i in range(config['data']['n_intervention_sets'] - 1):
-        interv_dict, interv_x_train = data_details.x_interv[i]
-        all_train_data.append(interv_x_train)
-        mask_train_interv = jnp.zeros_like(interv_x_train, dtype=bool)
-        intervened_nodes = list(interv_dict.keys())
-        mask_train_interv = mask_train_interv.at[:, intervened_nodes].set(True)
-        all_train_masks.append(mask_train_interv)
-    x_train = jnp.concatenate(all_train_data, axis=0)
-    mask_train = jnp.concatenate(all_train_masks, axis=0)
-
-    # Prepare held-out interventional data
-    interv_dict_ho, x_ho_intrv = data_details.x_interv[-1]
-    mask_ho_intrv = jnp.zeros_like(x_ho_intrv, dtype=bool)
-    intervened_nodes_ho = list(interv_dict_ho.keys())
-    mask_ho_intrv = mask_ho_intrv.at[:, intervened_nodes_ho].set(True)
+    # Use the new data generation module
+    data_generator = get_data_generator_from_config(config)
+    data_result = data_generator(config, subk)
+    
+    # Extract data components for compatibility with existing code
+    x_train = data_result.x_train
+    mask_train = data_result.mask_train
+    x_ho_intrv = data_result.x_ho_intrv
+    mask_ho_intrv = data_result.mask_ho_intrv
+    
+    # Extract ground truth for compatibility
+    data_details = type('DataDetails', (), {
+        'x_ho': data_result.x_ho,
+        'g': data_result.ground_truth['graph'],
+        'theta': data_result.ground_truth['theta']
+    })()
+    graph_model = data_result.ground_truth['graph_model']
+    generative_model = data_result.ground_truth['generative_model']
 
     # 4. Run All Learners
     results = {}
@@ -139,6 +130,22 @@ def main(config_path):
     print("\n--- Saving All Results ---")
     with open(os.path.join(results_dir, 'config.yaml'), 'w') as f:
         yaml.dump(config, f)
+    
+    # Save detailed intervention information for reproducibility
+    with open(os.path.join(results_dir, 'intervention_details.yaml'), 'w') as f:
+        yaml.dump(data_result.intervention_details, f)
+    
+    # Save ground truth information (graph as numpy array for easy loading)
+    ground_truth_save = {
+        'graph': np.array(data_result.ground_truth['graph']).tolist(),
+        # Note: theta and models are saved separately due to complex structure
+    }
+    with open(os.path.join(results_dir, 'ground_truth.yaml'), 'w') as f:
+        yaml.dump(ground_truth_save, f)
+    
+    # Save ground truth theta parameters
+    with open(os.path.join(results_dir, 'ground_truth_theta.pkl'), 'wb') as f:
+        pickle.dump(data_result.ground_truth['theta'], f)
     
     # Save metrics for all learners
     all_metrics = {name: res['metrics'] for name, res in results.items()}

@@ -17,16 +17,12 @@ conda config --prepend pkgs_dirs $WRKDIR/.conda_pkgs
 conda config --prepend envs_dirs $WRKDIR/.conda_envs
 
 # Create a new environment specifically for this project
-# Using the DiBS requirements but with a project-specific name
-echo "Creating causal_experiments environment..."
-mamba env create -f dibs/environment.yml -n causal_experiments
+# Using the new project-specific environment file
+echo "Creating causal_experiments environment from root environment.yml..."
+mamba env create -f environment.yml -n causal_experiments
 
 # Activate the environment
 source activate causal_experiments
-
-# Install additional dependencies needed for your project
-echo "Installing additional dependencies..."
-pip install pyyaml  # For YAML config files
 
 # Install DiBS in development mode from the submodule
 echo "Installing DiBS in development mode..."

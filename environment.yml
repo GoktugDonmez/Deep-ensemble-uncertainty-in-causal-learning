@@ -1,17 +1,30 @@
+name: causal_experiments
+channels:
+  - nvidia
+  - conda-forge
+  - defaults
 dependencies:
+  # Core Python
   - python=3.8
+  - pip
+
+  # JAX with GPU support
+  - jax
+  - jaxlib
+  - cudatoolkit~=11.8
+
+  # Dependencies from original requirements and other files
   - numpy
-  - pytorch
+  - python-igraph # igraph from conda-forge
+  - imageio
   - jupyter
   - jupyterlab
+  - tqdm
   - matplotlib
   - scikit-learn
   - seaborn
-  - tqdm
-  - pip
-  - jaxlib=*=cuda*  # wildcard version that includes cuda
-  - jax
+  - pyyaml
+
+  # Pip-only dependencies
   - pip:
-      - igraph
-      - gcastle
-      - mamba
+    - gcastle

@@ -96,7 +96,7 @@ class BaseLearner(ABC):
             csv_path: Path to CSV file
             run_id: Optional run ID
         """
-        from ..utils.csv_tracker import get_tracker
+        from utils.csv_tracker import get_tracker
         
         tracker = get_tracker(csv_path)
         tracker.save_results(
